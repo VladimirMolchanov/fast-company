@@ -8,21 +8,24 @@ const Users = () => {
         setUsers(newUsers)
     }
     const renderPhrase = (number) => {
-        let ends = ['', 'ет']
-        if(number >= 2 && number <= 4)
-            ends = ['a', 'ут']
-        return `${number} человек${ends[0]} тусан${ends[1]} с тобой сегодня`
-    }
-    console.log(users)
+        const lastOne = Number(number.toString().slice(-1));
+        if (number > 4 && number < 15) return "человек тусанет";
+        if ([2, 3, 4].indexOf(lastOne) >= 0) return "человека тусанут";
+        if (lastOne === 1) return "человек тусанет";
+        return "человек тусанет";
+    };
+
     return (
         <div>
             <div>
                 <h1>
-                    {users.length > 0 ?
-                        <span className="badge bg-primary">{renderPhrase(users.length)}</span>
-                        :
-                        <span className="badge bg-danger">Никто с тобой не тусанет</span>
-                    }
+                    <span
+                        className={"badge " + (users.length > 0 ? "bg-primary" : "bg-danger")}
+                    >
+                    {users.length > 0
+                        ? `${users.length + " " + renderPhrase(users.length)} с тобой сегодня`
+                        : "Никто с тобой не тусанет"}
+                </span>
                 </h1>
             </div>
             <table className="table">
