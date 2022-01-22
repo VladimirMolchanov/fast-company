@@ -11,7 +11,6 @@ const Users = ({ users, ...rest }) => {
     const handlePageChange = (pageIndex) => {
         setCurrentPage(pageIndex);
     };
-
     const userCrop = paginate(users, currentPage, pageSize);
     return (
         <>
@@ -45,7 +44,22 @@ const Users = ({ users, ...rest }) => {
     );
 };
 Users.propTypes = {
-    users: PropTypes.array
+    users: PropTypes.arrayOf(PropTypes.shape({
+        _id: PropTypes.string.isRequired,
+        name: PropTypes.string,
+        profession: PropTypes.shape({
+            _id: PropTypes.string.isRequired,
+            name: PropTypes.string
+        }),
+        qualities: PropTypes.arrayOf(PropTypes.shape({
+            _id: PropTypes.string.isRequired,
+            name: PropTypes.string,
+            color: PropTypes.string
+        })),
+        completedMeetings: PropTypes.number,
+        rate: PropTypes.number,
+        bookmark: PropTypes.bool
+    }))
 };
 
 export default Users;

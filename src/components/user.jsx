@@ -43,10 +43,17 @@ const User = ({
     );
 };
 User.propTypes = {
-    _id: PropTypes.string,
+    _id: PropTypes.string.isRequired,
     name: PropTypes.string,
-    qualities: PropTypes.array,
-    profession: PropTypes.object,
+    profession: PropTypes.shape({
+        _id: PropTypes.string.isRequired,
+        name: PropTypes.string
+    }),
+    qualities: PropTypes.arrayOf(PropTypes.shape({
+        _id: PropTypes.string.isRequired,
+        name: PropTypes.string,
+        color: PropTypes.string
+    })),
     completedMeetings: PropTypes.number,
     rate: PropTypes.number,
     onDelete: PropTypes.func,
