@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const SearchStatus = (props) => {
+const SearchStatus = ({ length }) => {
     const renderPhrase = (number) => {
         const lastOne = Number(number.toString().slice(-1));
         if (number > 4 && number < 15) return "человек тусанет";
@@ -13,13 +13,15 @@ export const SearchStatus = (props) => {
         <>
             <h2>
                 <span
-                    className={"badge " + (props.number > 0 ? "bg-primary" : "bg-danger")}
+                    className={"badge " + (length > 0 ? "bg-primary" : "bg-danger")}
                 >
-                    {props.number > 0
-                        ? `${props.number + " " + renderPhrase(props.number)} с тобой сегодня`
+                    {length > 0
+                        ? `${length + " " + renderPhrase(length)} с тобой сегодня`
                         : "Никто с тобой не тусанет"}
                 </span>
             </h2>
         </>
     )
 }
+
+export default SearchStatus
