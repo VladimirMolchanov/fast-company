@@ -1,16 +1,21 @@
 import React from "react";
 import PropTypes from "prop-types";
 
+function isArray (variable) {
+    return variable !== null && typeof variable === "object" && Array.isArray(variable);
+}
+
 const GroupList = ({ items, valueProperty, contentProperty, onItemSelect, selectedItem }) => {
+    const arrItems = isArray(items) ? items : Object.keys(items).map(key => items[key]);
     return (
         <ul className="list-group">
-            {Object.keys(items).map(item => (
+            {arrItems.map(item => (
                 <li
-                    key={items[item][valueProperty]}
-                    className={"list-group-item " + (items[item] === selectedItem ? "active" : "")}
-                    onClick={() => onItemSelect(items[item])}
+                    key={item[valueProperty]}
+                    className={"list-group-item " + (item === selectedItem ? "active" : "")}
+                    onClick={() => onItemSelect(item)}
                     role="button"
-                >{items[item][contentProperty]}</li>
+                >{item[contentProperty]}</li>
             ))}
         </ul>
     );
@@ -20,7 +25,7 @@ GroupList.defaultProps = {
     contentProperty: "name"
 };
 GroupList.propTypes = {
-    items: PropTypes.object.isRequired,
+    items: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
     valueProperty: PropTypes.string.isRequired,
     contentProperty: PropTypes.string.isRequired,
     onItemSelect: PropTypes.func,
