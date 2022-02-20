@@ -13,9 +13,6 @@ const TableHeader = ({ onSort, selectedSort, columns }) => {
         }
     };
 
-    console.log(columns);
-    console.log(selectedSort);
-
     return (
         <thead>
             <tr>
