@@ -5,9 +5,15 @@ import { Link } from "react-router-dom";
 const NavBar = () => {
     return (
         <nav className="nav">
-            <Link className="nav-link" to="/">Main</Link>
-            <Link className="nav-link" to="/login">Login</Link>
-            <Link className="nav-link" to="/users">Users</Link>
+            <li>
+                <Link className="nav-link" aria-current="page" to="/">Main</Link>
+            </li>
+            <li>
+                <Link className="nav-link" aria-current="page" to="/login">Login</Link>
+            </li>
+            <li>
+                <Link className="nav-link" aria-current="page" to="/users">Users</Link>
+            </li>
         </nav>
     );
 };
