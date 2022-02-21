@@ -4,7 +4,7 @@ import api from "../api";
 import QualitiesList from "./qualitiesList";
 import { useHistory } from "react-router-dom";
 
-const User = ({ userId }) => {
+const UserPage = ({ userId }) => {
     const history = useHistory();
     const [user, setUser] = useState();
 
@@ -42,8 +42,8 @@ const User = ({ userId }) => {
         </>
     );
 };
-User.propTypes = {
-    userId: PropTypes.string
+UserPage.propTypes = {
+    userId: PropTypes.string.isRequired
 };
 
-export default User;
+export default UserPage;
