@@ -3,16 +3,16 @@ import PropTypes from "prop-types";
 
 const TextField = ({ label, type, name, value, onChange }) => {
     return (
-        <>
+        <div>
             <label htmlFor={name}>{label}</label>
             <input
                 type={type}
-                id="name"
+                id={name}
                 name={name}
                 value={value}
                 onChange={onChange}
             />
-        </>
+        </div>
     );
 };
 TextField.defaultProps = {
