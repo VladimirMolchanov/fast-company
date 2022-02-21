@@ -6,7 +6,7 @@ const Login = () => {
         email: "",
         password: ""
     });
-    const [, setError] = useState();
+    const [error, setError] = useState({});
     const handleChange = ({ target }) => {
         setData((prevState) => ({
             ...prevState,
@@ -40,6 +40,7 @@ const Login = () => {
                 name="email"
                 value={data.email}
                 onChange={handleChange}
+                error={error.email}
             />
             <TextField
                 label="Пароль"
@@ -47,6 +48,7 @@ const Login = () => {
                 name="password"
                 value={data.password}
                 onChange={handleChange}
+                error={error.password}
             />
             <button type="submit">Submit</button>
         </form>
