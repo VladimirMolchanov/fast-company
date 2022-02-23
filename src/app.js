@@ -10,8 +10,8 @@ export const App = () => {
         <>
             <NavBar/>
             <Switch>
-                <Route path="/login:type?" component={Login}/>
                 <Route path="/users/:userId?" component={users}/>
+                <Route path="/login/:type?" component={Login}/>
                 <Route path="/" exact component={Main}/>
                 <Redirect to="/"/>
             </Switch>
