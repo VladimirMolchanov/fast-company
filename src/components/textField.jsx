@@ -2,17 +2,21 @@ import React from "react";
 import PropTypes from "prop-types";
 
 const TextField = ({ label, type, name, value, onChange, error }) => {
+    const getInputClasses = () => {
+        return "form-control" + (error ? " is-invalid" : "");
+    };
     return (
-        <div>
-            <label htmlFor={name}>{label}</label>
+        <div className="mb-4">
+            <label className="form-label" htmlFor={name}>{label}</label>
             <input
+                className={getInputClasses()}
                 type={type}
                 id={name}
                 name={name}
                 value={value}
                 onChange={onChange}
             />
-            {error && <p>{error}</p>}
+            {error && <div className="invalid-feedback">{error}</div>}
         </div>
     );
 };
