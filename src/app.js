@@ -10,7 +10,7 @@ export const App = () => {
         <>
             <NavBar/>
             <Switch>
-                <Route path="/login" component={Login}/>
+                <Route path="/login:type?" component={Login}/>
                 <Route path="/users/:userId?" component={users}/>
                 <Route path="/" exact component={Main}/>
                 <Redirect to="/"/>
