@@ -20,7 +20,11 @@ const UserListPage = () => {
     const [users, setUsers] = useState();
 
     useEffect(() => {
-        api.users.fetchAll().then((data) => setUsers(data));
+        let cleanup = false;
+        api.users.fetchAll().then((data) => {
+            if (!cleanup) setUsers(data);
+        });
+        return () => (cleanup = true);
     }, []);
 
     const handleDelete = (userId) => {
@@ -39,7 +43,11 @@ const UserListPage = () => {
     };
 
     useEffect(() => {
-        api.professions.fetchAll().then((data) => setProfessions(data));
+        let cleanup = false;
+        api.professions.fetchAll().then((data) => {
+            if (!cleanup) setProfessions(data);
+        });
+        return () => (cleanup = true);
     }, []);
 
     useEffect(() => {
