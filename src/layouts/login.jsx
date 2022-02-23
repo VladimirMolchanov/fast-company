@@ -45,8 +45,9 @@ const Login = () => {
     const validate = () => {
         const error = validator(data, validatorConfig);
         setError(error);
-        return Object.keys(error).length !== 0;
+        return Object.keys(error).length === 0;
     };
+    const isValid = Object.keys(error).length === 0;
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -71,7 +72,7 @@ const Login = () => {
                 onChange={handleChange}
                 error={error.password}
             />
-            <button type="submit">Submit</button>
+            <button type="submit" disabled={!isValid}>Submit</button>
         </form>
     );
 };
