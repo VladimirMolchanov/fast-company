@@ -13,6 +13,13 @@ const SelectFiled = ({ label, value, onChange, defaultOption, options, error, na
         }))
         : options;
 
+    const handleChange = ({ target }) => {
+        onChange({
+            name: target.name,
+            value: target.value
+        });
+    };
+
     return (
         <div className="mb-4">
             <label htmlFor={name} className="form-label">{label}</label>
@@ -21,7 +28,7 @@ const SelectFiled = ({ label, value, onChange, defaultOption, options, error, na
                 name={name}
                 id={name}
                 value={value}
-                onChange={onChange}
+                onChange={handleChange}
             >
                 <option disabled value="">{defaultOption}</option>
                 {optionsArray && optionsArray.map(option => (

@@ -4,30 +4,38 @@ import TextField from "../common/form/textField";
 import api from "../../api";
 import SelectFiled from "../common/form/selectFiled";
 import RadioField from "../common/form/radioField";
+import MultiSelectField from "../common/form/multiSelectField";
 
 const RegisterForm = () => {
     const [data, setData] = useState({
         email: "",
         password: "",
         profession: "",
-        sex: "male"
+        sex: "male",
+        qualities: []
     });
     const [error, setError] = useState({});
     const [professions, setProfessions] = useState();
+    const [qualities, setQualities] = useState({});
 
     useEffect(() => {
         let cleanup = false;
         api.professions.fetchAll().then((data) => {
             if (!cleanup) setProfessions(data);
         });
+        api.qualities.fetchAll().then((data) => {
+            if (!cleanup) setQualities(data);
+        });
         return () => (cleanup = true);
     }, []);
 
-    const handleChange = ({ target }) => {
-        setData((prevState) => ({
-            ...prevState,
-            [target.name]: target.value
-        }));
+    const handleChange = (target) => {
+        if (target) {
+            setData((prevState) => ({
+                ...prevState,
+                [target.name]: target.value
+            }));
+        }
     };
     const validatorConfig = {
         email: {
@@ -111,6 +119,12 @@ const RegisterForm = () => {
                 value={data.sex}
                 name="sex"
                 onChange={handleChange}
+            />
+            <MultiSelectField
+                options={qualities}
+                onChange={handleChange}
+                name="qualities"
+                label="Выберите ваши качества"
             />
             <button
                 type="submit"

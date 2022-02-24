@@ -9,10 +9,13 @@ const TextField = ({ label, type, name, value, onChange, error, placeholder }) =
     const toggleShowPassword = () => {
         setShowPassword((prev) => !prev);
     };
+    const handleChange = ({ target }) => {
+        onChange({ name: target.name, value: target.value });
+    };
     return (
         <div className="mb-4">
             {label &&
-                <label className={name} htmlFor={name}>{label}</label>
+                <label className="form-label" htmlFor={name}>{label}</label>
             }
             <div className="input-group has-validation">
                 <input
@@ -21,7 +24,7 @@ const TextField = ({ label, type, name, value, onChange, error, placeholder }) =
                     id={name}
                     name={name}
                     value={value}
-                    onChange={onChange}
+                    onChange={handleChange}
                     placeholder={placeholder}
                 />
                 {type === "password" && (

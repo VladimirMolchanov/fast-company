@@ -17,7 +17,8 @@ module.exports = {
         "semi": [2, "always"],
         "space-before-function-paren": ["error", {
             anonymous: "always",
-            names: "never"
+            names: "never",
+            asyncArrow: "always"
         }],
         "multiline-ternary": ["off"],
         "quotes": [
