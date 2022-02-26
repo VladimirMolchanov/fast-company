@@ -1,35 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { validator } from "../../utils/validator";
+import PropTypes from "prop-types";
 import TextField from "../common/form/textField";
-import api from "../../api";
 import SelectFiled from "../common/form/selectFiled";
 import RadioField from "../common/form/radioField";
 import MultiSelectField from "../common/form/multiSelectField";
-import CheckBoxField from "../common/form/checkBoxField";
+import { validator } from "../../utils/validator";
+import api from "../../api";
+import { useHistory } from "react-router-dom";
 
-const RegisterForm = () => {
+const UserForm = ({ user, professions, qualities }) => {
+    const history = useHistory();
     const [data, setData] = useState({
-        email: "",
-        password: "",
-        profession: "",
-        sex: "male",
-        qualities: [],
-        license: false
+        name: user.name || "",
+        email: user.email || "",
+        profession: user.profession ? user.profession._id : "",
+        sex: user.sex || "male",
+        qualities: user.qualities ? user.qualities.map(qualitie => ({ label: qualitie.name, value: qualitie._id })) : []
     });
     const [error, setError] = useState({});
-    const [professions, setProfessions] = useState();
-    const [qualities, setQualities] = useState({});
-
-    useEffect(() => {
-        let cleanup = false;
-        api.professions.fetchAll().then((data) => {
-            if (!cleanup) setProfessions(data);
-        });
-        api.qualities.fetchAll().then((data) => {
-            if (!cleanup) setQualities(data);
-        });
-        return () => (cleanup = true);
-    }, []);
+    const [isPending, setIsPending] = useState(false);
 
     const handleChange = (target) => {
         if (target) {
@@ -40,6 +29,11 @@ const RegisterForm = () => {
         }
     };
     const validatorConfig = {
+        name: {
+            isRequired: {
+                message: "Имя обязательна для заполнения"
+            }
+        },
         email: {
             isRequired: {
                 message: "Электронная почта обязательна для заполнения"
@@ -48,29 +42,9 @@ const RegisterForm = () => {
                 message: "Email введен некорректно"
             }
         },
-        password: {
-            isRequired: {
-                message: "Пароль обязательна для заполнения"
-            },
-            isCapitalSymbol: {
-                message: "Пароль должен содержать хотя бы одну заглавную букву"
-            },
-            isContainDigit: {
-                message: "Пароль должен содержать хотя бы одно число"
-            },
-            min: {
-                message: "Пароль должен состоять минимум из 8 символов",
-                value: 8
-            }
-        },
         profession: {
             isRequired: {
                 message: "Профессия обязательна для заполнения"
-            }
-        },
-        license: {
-            isRequired: {
-                message: "Вы не можете использовать наш сервис без подтверждения лицензионного соглашения"
             }
         }
     };
@@ -87,26 +61,41 @@ const RegisterForm = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         const isValid = validate();
-        if (isValid) return;
-        console.log(data);
+        if (!isValid) return;
+        const professionName = Object.keys(professions).find((name) => professions[name]._id === data.profession);
+        const _qualities = data.qualities.map((qualitie) => {
+            const qualitiesName = Object.keys(qualities).find((name) => qualities[name]._id === qualitie.value);
+            return qualities[qualitiesName];
+        });
+        setIsPending(true);
+
+        api.users.update(user._id, {
+            name: data.name,
+            email: data.email,
+            sex: data.sex,
+            profession: professions[professionName],
+            qualities: _qualities
+        }).then(() => {
+            setIsPending(false);
+            history.push(`/users/${user._id}`);
+        });
     };
 
     return (
         <form onSubmit={handleSubmit}>
+            <TextField
+                label="Имя"
+                name="name"
+                value={data.name}
+                onChange={handleChange}
+                error={error.name}
+            />
             <TextField
                 label="Электронная почта"
                 name="email"
                 value={data.email}
                 onChange={handleChange}
                 error={error.email}
-            />
-            <TextField
-                label="Пароль"
-                type="password"
-                name="password"
-                value={data.password}
-                onChange={handleChange}
-                error={error.password}
             />
             <SelectFiled
                 onChange={handleChange}
@@ -134,16 +123,23 @@ const RegisterForm = () => {
                 name="qualities"
                 label="Выберите ваши качества"
             />
-            <CheckBoxField value={data.license} onChange={handleChange} name="license" error={error.license}>
-                Подтвердить <a>лицензионное соглашение</a>
-            </CheckBoxField>
             <button
                 type="submit"
-                disabled={!isValid}
+                disabled={!isValid || isPending}
                 className="btn btn-primary w-100 mx-auto"
-            >Submit</button>
+            >
+                {isPending &&
+                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"/>
+                }
+                Submit
+            </button>
         </form>
     );
 };
+UserForm.propTypes = {
+    user: PropTypes.object,
+    professions: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+    qualities: PropTypes.oneOfType([PropTypes.object, PropTypes.array])
+};
 
-export default RegisterForm;
+export default UserForm;
