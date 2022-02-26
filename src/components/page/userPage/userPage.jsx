@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import api from "../api";
-import QualitiesList from "./qualitiesList";
-import { useHistory } from "react-router-dom";
+import api from "../../../api";
+import QualitiesList from "../../ui/qualitiel/qualitiesList";
+import { useHistory, useLocation } from "react-router-dom";
 
 const UserPage = ({ userId }) => {
     const history = useHistory();
+    const location = useLocation();
     const [user, setUser] = useState();
 
     useEffect(() => {
@@ -13,7 +14,7 @@ const UserPage = ({ userId }) => {
     }, []);
 
     const handleBtn = () => {
-        history.push("/users");
+        history.push(`${location.pathname}/edit`);
     };
 
     const renderUser = (user) => {
@@ -28,7 +29,7 @@ const UserPage = ({ userId }) => {
                     onClick={() => {
                         handleBtn();
                     }}
-                >Все пользователи</button>
+                >Изменить</button>
             </>
         );
     };
