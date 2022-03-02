@@ -20,6 +20,7 @@ module.exports = {
             names: "never",
             asyncArrow: "always"
         }],
+        "react/display-name": "off",
         "multiline-ternary": ["off"],
         "quotes": [
             "error",
