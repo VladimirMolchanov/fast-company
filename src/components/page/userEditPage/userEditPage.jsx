@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import api from "../../../api";
-import PropTypes from "prop-types";
 import UserForm from "../../ui/userForm";
+import { useParams } from "react-router-dom";
 
-const UserEditPage = ({ userId }) => {
+const UserEditPage = () => {
+    const { userId } = useParams();
     const [user, setUser] = useState();
     const [professions, setProfessions] = useState();
     const [qualities, setQualities] = useState({});
@@ -38,9 +39,6 @@ const UserEditPage = ({ userId }) => {
             }
         </>
     );
-};
-UserEditPage.propTypes = {
-    userId: PropTypes.string.isRequired
 };
 
 export default UserEditPage;

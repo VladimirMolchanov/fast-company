@@ -7,6 +7,7 @@ import MultiSelectField from "../common/form/multiSelectField";
 import { validator } from "../../utils/validator";
 import api from "../../api";
 import { useHistory } from "react-router-dom";
+import BackHistoryButton from "../common/backButton";
 
 const UserForm = ({ user, professions, qualities }) => {
     const history = useHistory();
@@ -82,58 +83,65 @@ const UserForm = ({ user, professions, qualities }) => {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <TextField
-                label="Имя"
-                name="name"
-                value={data.name}
-                onChange={handleChange}
-                error={error.name}
-            />
-            <TextField
-                label="Электронная почта"
-                name="email"
-                value={data.email}
-                onChange={handleChange}
-                error={error.email}
-            />
-            <SelectFiled
-                onChange={handleChange}
-                options={professions}
-                defaultOption="Choose..."
-                error={error.profession}
-                label="Выбери свою профессию"
-                name="profession"
-                value={data.profession}
-            />
-            <RadioField
-                options={[
-                    { name: "Male", value: "male" },
-                    { name: "Female", value: "female" },
-                    { name: "Other", value: "other" }
-                ]}
-                value={data.sex}
-                name="sex"
-                onChange={handleChange}
-            />
-            <MultiSelectField
-                options={qualities}
-                onChange={handleChange}
-                defaultValue={data.qualities}
-                name="qualities"
-                label="Выберите ваши качества"
-            />
-            <button
-                type="submit"
-                disabled={!isValid || isPending}
-                className="btn btn-primary w-100 mx-auto"
-            >
-                {isPending &&
-                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"/>
-                }
-                Submit
-            </button>
-        </form>
+        <div className="container mt-5">
+            <BackHistoryButton/>
+            <div className="row">
+                <div className="col-md-6 offset-md-3 shadow p-4">
+                    <form onSubmit={handleSubmit}>
+                        <TextField
+                            label="Имя"
+                            name="name"
+                            value={data.name}
+                            onChange={handleChange}
+                            error={error.name}
+                        />
+                        <TextField
+                            label="Электронная почта"
+                            name="email"
+                            value={data.email}
+                            onChange={handleChange}
+                            error={error.email}
+                        />
+                        <SelectFiled
+                            onChange={handleChange}
+                            options={professions}
+                            defaultOption="Choose..."
+                            error={error.profession}
+                            label="Выбери свою профессию"
+                            name="profession"
+                            value={data.profession}
+                        />
+                        <RadioField
+                            options={[
+                                { name: "Male", value: "male" },
+                                { name: "Female", value: "female" },
+                                { name: "Other", value: "other" }
+                            ]}
+                            value={data.sex}
+                            name="sex"
+                            onChange={handleChange}
+                        />
+                        <MultiSelectField
+                            options={qualities}
+                            onChange={handleChange}
+                            defaultValue={data.qualities}
+                            name="qualities"
+                            label="Выберите ваши качества"
+                        />
+                        <button
+                            type="submit"
+                            disabled={!isValid || isPending}
+                            className="btn btn-primary w-100 mx-auto"
+                        >
+                            {isPending &&
+                                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"/>
+                            }
+                            Submit
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
     );
 };
 UserForm.propTypes = {

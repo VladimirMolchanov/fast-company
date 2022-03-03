@@ -13,6 +13,7 @@ module.exports = {
     },
     plugins: ["react"],
     rules: {
+        "camelcase": "off",
         "indent": ["error", 4],
         "semi": [2, "always"],
         "space-before-function-paren": ["error", {
@@ -20,6 +21,7 @@ module.exports = {
             names: "never",
             asyncArrow: "always"
         }],
+        "react/display-name": "off",
         "multiline-ternary": ["off"],
         "quotes": [
             "error",
