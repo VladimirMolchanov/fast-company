@@ -4,54 +4,36 @@ import { Link } from "react-router-dom";
 import BookMark from "../common/bookmark";
 import Qualities from "./qualitiel/qualitiesList";
 import Table from "../common/table/table";
+import Profession from "./profession";
 
 const UsersTable = ({ users, onSort, selectedSort, onToggleBookMark, onDelete, ...rest }) => {
     const columns = {
         name: {
             path: "name",
             name: "Имя",
-            component: (user) => (
-                <Link to={`/users/${user._id}`}>{user.name}</Link>
-            )
+            component: (user) => <Link to={`/users/${user._id}`}>{user.name}</Link>
         },
         qualities: {
             name: "Качества",
-            component: (user) => (
-                <Qualities qualities={user.qualities}/>
-            )
+            component: (user) => <Qualities qualities={user.qualities} />
         },
-        professions: { path: "profession.name", name: "Профессия" },
+        professions: { name: "Профессия", component: (user) => <Profession id={user.profession} /> },
         completedMeetings: { path: "completedMeetings", name: "Встретился, раз" },
         rate: { path: "rate", name: "Оценка" },
         bookmark: {
             path: "bookmark",
             name: "Избранное",
-            component: (user) => (
-                <BookMark
-                    status={user.bookmark}
-                    onClick={() => onToggleBookMark(user._id)}
-                />
-            )
+            component: (user) => <BookMark status={user.bookmark} onClick={() => onToggleBookMark(user._id)} />
         },
         delete: {
             component: (user) => (
-                <button
-                    onClick={() => onDelete(user._id)}
-                    className="btn btn-danger"
-                >
+                <button onClick={() => onDelete(user._id)} className="btn btn-danger">
                     delete
                 </button>
             )
         }
     };
-    return (
-        <Table
-            onSort={onSort}
-            selectedSort={selectedSort}
-            columns={columns}
-            data={users}
-        />
-    );
+    return <Table onSort={onSort} selectedSort={selectedSort} columns={columns} data={users} />;
 };
 UsersTable.propTypes = {
     users: PropTypes.array.isRequired,
