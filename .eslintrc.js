@@ -13,17 +13,20 @@ module.exports = {
     },
     plugins: ["react"],
     rules: {
-        "camelcase": "off",
-        "indent": ["error", 4],
-        "semi": [2, "always"],
-        "space-before-function-paren": ["error", {
-            anonymous: "always",
-            names: "never",
-            asyncArrow: "always"
-        }],
+        camelcase: "off",
+        indent: ["error", 4, { SwitchCase: 1 }],
+        semi: [2, "always"],
+        "space-before-function-paren": [
+            "error",
+            {
+                anonymous: "always",
+                named: "never",
+                asyncArrow: "always"
+            }
+        ],
         "react/display-name": "off",
         "multiline-ternary": ["off"],
-        "quotes": [
+        quotes: [
             "error",
             "double",
             {

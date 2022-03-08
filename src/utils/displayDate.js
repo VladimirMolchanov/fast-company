@@ -1,4 +1,4 @@
-export function displayDate (data) {
+export function displayDate(data) {
     const date = new Date(parseInt(data));
     const dateNow = new Date();
     const yearDir = dateNow.getFullYear() - date.getFullYear();
@@ -19,7 +19,5 @@ export function displayDate (data) {
             month: "long"
         })}`;
     }
-    return (
-        date.getFullYear() + "." + (date.getMonth() + 1) + "_" + date.getDate()
-    );
+    return date.getFullYear() + "." + (date.getMonth() + 1) + "_" + date.getDate();
 }
