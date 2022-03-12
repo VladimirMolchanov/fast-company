@@ -12,16 +12,18 @@ export const App = () => {
     return (
         <>
             <NavBar />
-            <Switch>
-                <ProfessionProvider>
-                    <QualityProvider>
+
+            <ProfessionProvider>
+                <QualityProvider>
+                    <Switch>
                         <Route path="/users/:userId?/:edit?" component={users} />
                         <Route path="/login/:type?" component={Login} />
-                    </QualityProvider>
-                </ProfessionProvider>
-                <Route path="/" exact component={Main} />
-                <Redirect to="/" />
-            </Switch>
+                        <Route path="/" exact component={Main} />
+                        <Redirect to="/" />
+                    </Switch>
+                </QualityProvider>
+            </ProfessionProvider>
+
             <ToastContainer />
         </>
     );
