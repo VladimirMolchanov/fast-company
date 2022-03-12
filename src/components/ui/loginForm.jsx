@@ -3,8 +3,12 @@ import React, { useEffect, useState } from "react";
 import TextField from "../common/form/textField";
 import CheckBoxField from "../common/form/checkBoxField";
 import * as yup from "yup";
+import { useAuth } from "../../hooks/useAuth";
+import { useHistory } from "react-router-dom";
 
 const LoginForm = () => {
+    const history = useHistory();
+    const { signIn } = useAuth();
     const [data, setData] = useState({
         email: "",
         password: "",
@@ -21,15 +25,12 @@ const LoginForm = () => {
     };
 
     const validateScheme = yup.object().shape({
-        password: yup.string()
-            .required("Пароль обязательна для заполнения")
-            .matches(/^(?=.*[A-Z])/, "Пароль должен содержать хотя бы одну заглавную букву")
-            .matches(/(?=.*[0-9])/, "Пароль должен содержать хотя бы одно число")
-            .matches(/(?=.*[!@#$%^&*])/, "Пароль должен содержать один из специальных символов !@#$%^&*")
-            .matches(/(?=.{8,})/, "Пароль должен состоять минимум из 8 символов"),
-        email: yup.string()
-            .required("Электронная почта обязательна для заполнения")
-            .email("Email введен некорректно")
+        password: yup.string().required("Пароль обязательна для заполнения"),
+        // .matches(/^(?=.*[A-Z])/, "Пароль должен содержать хотя бы одну заглавную букву")
+        // .matches(/(?=.*[0-9])/, "Пароль должен содержать хотя бы одно число")
+        // .matches(/(?=.*[!@#$%^&*])/, "Пароль должен содержать один из специальных символов !@#$%^&*")
+        // .matches(/(?=.{8,})/, "Пароль должен состоять минимум из 8 символов"),
+        email: yup.string().required("Электронная почта обязательна для заполнения").email("Email введен некорректно")
     });
 
     // const validatorConfig = {
@@ -62,7 +63,8 @@ const LoginForm = () => {
     }, [data]);
     const validate = () => {
         // const error = validator(data, validatorConfig);
-        validateScheme.validate(data)
+        validateScheme
+            .validate(data)
             .then(() => {
                 setError({});
             })
@@ -76,11 +78,16 @@ const LoginForm = () => {
     };
     const isValid = Object.keys(error).length === 0;
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const isValid = validate();
-        if (isValid) return;
-        console.log(data);
+        if (!isValid) return;
+        try {
+            await signIn(data);
+            history.push("/");
+        } catch (error) {
+            setError(error);
+        }
     };
     return (
         <form onSubmit={handleSubmit}>
@@ -102,11 +109,9 @@ const LoginForm = () => {
             <CheckBoxField value={data.stayOn} onChange={handleChange} name="stayOn">
                 Оставаться в системе
             </CheckBoxField>
-            <button
-                type="submit"
-                disabled={!isValid}
-                className="btn btn-primary w-100 mx-auto"
-            >Submit</button>
+            <button type="submit" disabled={!isValid} className="btn btn-primary w-100 mx-auto">
+                Submit
+            </button>
         </form>
     );
 };
