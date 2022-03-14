@@ -27,6 +27,13 @@ http.interceptors.request.use(
                     localId: data.local_id
                 });
             }
+            const accessToken = localStorageService.getAccessToken();
+            if (accessToken) {
+                config.params = {
+                    ...config.params,
+                    auth: accessToken
+                };
+            }
         }
         return config;
     },
