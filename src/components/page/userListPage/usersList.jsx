@@ -3,16 +3,16 @@ import PropTypes from "prop-types";
 import Pagination from "../../common/pagination";
 import { paginate } from "../../../utils/paginate";
 import GroupList from "../../common/groupList";
-import api from "../../../api";
 import SearchStatus from "../../ui/searchStatus";
 import UsersTable from "../../ui/usersTable";
 import _ from "lodash";
 import Search from "../../common/search";
 import { useUser } from "../../../hooks/useUsers";
+import { useProfessions } from "../../../hooks/useProfession";
 
 const UserListPage = () => {
     const [currentPage, setCurrentPage] = useState(1);
-    const [professions, setProfessions] = useState();
+    const { isLoading: professionsLoading, professions } = useProfessions();
     const [selectedProf, setSelectedProf] = useState();
     const [sortBy, setSortBy] = useState({ path: "name", order: "asc" });
     const [search, setSearch] = useState("");
@@ -23,14 +23,6 @@ const UserListPage = () => {
     const handleDelete = (userId) => {};
 
     const handleToggleBookMark = (userId) => {};
-
-    useEffect(() => {
-        let cleanup = false;
-        api.professions.fetchAll().then((data) => {
-            if (!cleanup) setProfessions(data);
-        });
-        return () => (cleanup = true);
-    }, []);
 
     useEffect(() => {
         setCurrentPage(1);
@@ -74,10 +66,9 @@ const UserListPage = () => {
         const clearFilter = () => {
             setSelectedProf(null);
         };
-
         return (
             <div className="d-flex">
-                {professions && (
+                {!professionsLoading && professions && (
                     <div className="d-flex flex-column flex-shrink-0 p-3">
                         <GroupList
                             selectedItem={selectedProf}
