@@ -20,7 +20,7 @@ export const useAuth = () => {
 
 const AuthProvider = ({ children }) => {
     const [error, setError] = useState(null);
-    const [currentUser, setUser] = useState({});
+    const [currentUser, setUser] = useState();
     async function signIn({ email, password }) {
         const url = `accounts:signInWithPassword`;
         try {
