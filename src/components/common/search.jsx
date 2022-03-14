@@ -3,8 +3,8 @@ import TextField from "../common/form/textField";
 import PropTypes from "prop-types";
 
 const Search = ({ onSearch, value }) => {
-    const handleChange = ({ target }) => {
-        onSearch(target.value);
+    const handleChange = ({ value }) => {
+        onSearch(value);
     };
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -12,13 +12,7 @@ const Search = ({ onSearch, value }) => {
     return (
         <>
             <form onSubmit={handleSubmit}>
-                <TextField
-                    label=""
-                    name="search"
-                    value={value}
-                    onChange={handleChange}
-                    placeholder="Search"
-                />
+                <TextField label="" name="search" value={value} onChange={handleChange} placeholder="Search" />
             </form>
         </>
     );
