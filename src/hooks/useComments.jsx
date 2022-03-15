@@ -21,7 +21,7 @@ const CommentsProvider = ({ children }) => {
 
     useEffect(() => {
         getComments();
-    }, []);
+    }, [userId]);
     useEffect(() => {
         if (error !== null) {
             toast.error(error);
@@ -38,8 +38,8 @@ const CommentsProvider = ({ children }) => {
             _id: nanoid()
         };
         try {
-            const { content } = commentService.createComment(comment);
-            console.log(content);
+            const { content } = await commentService.createComment(comment);
+            setComments((prevState) => [...prevState, content]);
         } catch (e) {
             errorCatcher(e);
         }
