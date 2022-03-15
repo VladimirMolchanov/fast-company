@@ -20,7 +20,7 @@ const CommentsProvider = ({ children }) => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        setComments(null);
+        getComments();
     }, []);
     useEffect(() => {
         if (error !== null) {
@@ -39,10 +39,20 @@ const CommentsProvider = ({ children }) => {
         };
         try {
             const { content } = commentService.createComment(comment);
-            setLoading(false);
             console.log(content);
         } catch (e) {
             errorCatcher(e);
+        }
+    }
+
+    async function getComments() {
+        try {
+            const { content } = await commentService.getComments(userId);
+            setComments(content);
+        } catch (e) {
+            errorCatcher(e);
+        } finally {
+            setLoading(false);
         }
     }
 
