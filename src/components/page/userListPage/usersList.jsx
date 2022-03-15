@@ -9,6 +9,7 @@ import _ from "lodash";
 import Search from "../../common/search";
 import { useUser } from "../../../hooks/useUsers";
 import { useProfessions } from "../../../hooks/useProfession";
+import { useAuth } from "../../../hooks/useAuth";
 
 const UserListPage = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -18,6 +19,7 @@ const UserListPage = () => {
     const [search, setSearch] = useState("");
     const pageSize = 8;
 
+    const { currentUser } = useAuth();
     const { users } = useUser();
 
     const handleDelete = (userId) => {};
@@ -43,21 +45,21 @@ const UserListPage = () => {
         setSearch(search);
     };
 
-    const filter = () => {
+    const filter = (data) => {
         if (selectedProf) {
-            return users.filter((user) => JSON.stringify(user.profession) === JSON.stringify(selectedProf));
+            return data.filter((user) => JSON.stringify(user.profession) === JSON.stringify(selectedProf));
         }
         if (search) {
-            return users.filter((user) => {
+            return data.filter((user) => {
                 const s = user.name.toLowerCase().match(search.toLowerCase());
                 return s && s.length !== 0;
             });
         }
-        return users;
+        return data.filter((u) => u._id !== currentUser._id);
     };
 
     if (users) {
-        const filteredUsers = filter();
+        const filteredUsers = filter(users);
 
         const count = filteredUsers.length;
         const sortedUsers = _.orderBy(filteredUsers, [sortBy.path], [sortBy.order]);
