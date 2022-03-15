@@ -2,8 +2,10 @@ import React from "react";
 import { displayDate } from "../../../utils/displayDate";
 import PropTypes from "prop-types";
 import { useUser } from "../../../hooks/useUsers";
+import { useAuth } from "../../../hooks/useAuth";
 
 const Comment = ({ content, created_at, created, _id, id, userId, onRemove }) => {
+    const { currentUser } = useAuth();
     const { getUserById } = useUser();
     const user = getUserById(userId);
     return (
@@ -18,11 +20,13 @@ const Comment = ({ content, created_at, created, _id, id, userId, onRemove }) =>
                                     <p className="mb-1 ">
                                         {user && user.name} <span className="small">- {displayDate(created_at)}</span>
                                     </p>
-                                    <button
-                                        className="btn btn-sm text-primary d-flex align-items-center"
-                                        onClick={() => onRemove(_id)}>
-                                        <i className="bi bi-x-lg" />
-                                    </button>
+                                    {currentUser._id === userId && (
+                                        <button
+                                            className="btn btn-sm text-primary d-flex align-items-center"
+                                            onClick={() => onRemove(_id)}>
+                                            <i className="bi bi-x-lg" />
+                                        </button>
+                                    )}
                                 </div>
                                 <p className="small mb-0">{content}</p>
                             </div>
