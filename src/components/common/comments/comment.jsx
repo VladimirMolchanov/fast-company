@@ -1,23 +1,12 @@
 import React, { useEffect, useState } from "react";
-import api from "../../../api";
 import { displayDate } from "../../../utils/displayDate";
 import PropTypes from "prop-types";
 
-const Comment = ({
-    content,
-    created_at, created,
-    _id, id,
-    userId,
-    onRemove
-}) => {
-    const [user, setUser] = useState();
+const Comment = ({ content, created_at, created, _id, id, userId, onRemove }) => {
+    const [user] = useState();
     const [isLoading, setIsLoading] = useState(false);
     useEffect(() => {
         setIsLoading(true);
-        api.users.getById(userId).then((data) => {
-            setUser(data);
-            setIsLoading(false);
-        });
     }, []);
     return (
         <div className="bg-light card-body mb-3">
@@ -39,15 +28,12 @@ const Comment = ({
                                     <div className="d-flex justify-content-between align-items-center">
                                         <p className="mb-1 ">
                                             {user && user.name}{" "}
-                                            <span className="small">
-                                                - {displayDate(created_at)}
-                                            </span>
+                                            <span className="small">- {displayDate(created_at)}</span>
                                         </p>
                                         <button
                                             className="btn btn-sm text-primary d-flex align-items-center"
-                                            onClick={() => onRemove(_id)}
-                                        >
-                                            <i className="bi bi-x-lg"/>
+                                            onClick={() => onRemove(_id)}>
+                                            <i className="bi bi-x-lg" />
                                         </button>
                                     </div>
                                     <p className="small mb-0">{content}</p>
