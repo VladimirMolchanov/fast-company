@@ -1,20 +1,33 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAuth } from "./useAuth";
 import { nanoid } from "nanoid";
+import commentService from "../service/comment.service";
+import { toast } from "react-toastify";
+import PropTypes from "prop-types";
 
 const CommmentsContext = React.createContext();
 
-export const useProfessions = () => {
+export const useComment = () => {
     return useContext(CommmentsContext);
 };
 
-const CommmentsProvider = ({ children }) => {
+const CommentsProvider = ({ children }) => {
     const { userId } = useParams();
     const { currentUser } = useAuth();
     const [comments, setComments] = useState([]);
     const [isLoading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    useEffect(() => {
+        setComments(null);
+    }, []);
+    useEffect(() => {
+        if (error !== null) {
+            toast.error(error);
+            setError(null);
+        }
+    }, [error]);
 
     async function createComment(data) {
         const comment = {
@@ -24,12 +37,30 @@ const CommmentsProvider = ({ children }) => {
             userId: currentUser._id,
             _id: nanoid()
         };
+        try {
+            const { content } = commentService.createComment(comment);
+            setLoading(false);
+            console.log(content);
+        } catch (e) {
+            errorCatcher(e);
+        }
+    }
+
+    function errorCatcher(error) {
+        const { message } = error.response.data;
+        setError(message);
+        setLoading(false);
     }
     return (
         <>
-            <CommmentsContext.Provider value={{ comments, createComment }}>{children}</CommmentsContext.Provider>
+            <CommmentsContext.Provider value={{ isLoading, comments, createComment }}>
+                {children}
+            </CommmentsContext.Provider>
         </>
     );
 };
+CommentsProvider.propTypes = {
+    children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node])
+};
 
-export default CommmentsProvider;
+export default CommentsProvider;

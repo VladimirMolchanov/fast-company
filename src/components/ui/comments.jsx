@@ -4,11 +4,11 @@ import api from "../../api";
 import { orderBy } from "lodash";
 import AddCommentForm from "../common/comments/addCommentForm";
 import CommentsList from "../common/comments/commentsList";
-import useComments from "../../hooks/useComments";
+import { useComment } from "../../hooks/useComments";
 const Comments = () => {
     const { userId } = useParams();
     const [comments, setComment] = useState([]);
-    const { createComment } = useComments();
+    const { createComment } = useComment();
     useEffect(() => {
         api.comments.fetchCommentsForUser(userId).then((data) => setComment(data));
     }, []);
