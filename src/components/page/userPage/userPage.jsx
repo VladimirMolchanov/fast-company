@@ -10,7 +10,6 @@ import CommentsProvider from "../../../hooks/useComments";
 const UserPage = ({ userId }) => {
     const { getUserById } = useUser();
     const user = getUserById(userId);
-
     const renderUser = (user) => {
         return (
             <>

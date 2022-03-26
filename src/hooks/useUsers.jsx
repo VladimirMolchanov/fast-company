@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import userService from "../service/user.service";
 import { toast } from "react-toastify";
+import { useAuth } from "./useAuth";
 
 const UserContext = React.createContext();
 
@@ -10,8 +11,22 @@ export const useUser = () => {
 };
 const UserProvider = ({ children }) => {
     const [users, setUsers] = useState([]);
+    const { currentUser } = useAuth();
     const [isLoading, setIsLoading] = useState([]);
     const [error, setError] = useState([]);
+
+    useEffect(() => {
+        if (!isLoading) {
+            const newUsers = [...users];
+            const indexUser = users.findIndex((u) => u._id === currentUser._id);
+            newUsers[indexUser] = currentUser;
+            setUsers(newUsers);
+        }
+        // setUsers((prevState) => ({
+        //     ...prevState,
+        //     [currentUser._id]: currentUser
+        // }));
+    }, [currentUser]);
 
     useEffect(() => {
         getUsers();
@@ -32,6 +47,18 @@ const UserProvider = ({ children }) => {
             errorCatcher(error);
         }
     }
+    async function updateUser(data) {
+        try {
+            const { content } = await userService.update(data);
+            setUsers((prevState) => ({
+                ...prevState,
+                [content._id]: content
+            }));
+        } catch (e) {
+            errorCatcher(e);
+            throw e;
+        }
+    }
     function errorCatcher(error) {
         const { message } = error.response.data;
         setError(message);
@@ -43,7 +70,7 @@ const UserProvider = ({ children }) => {
 
     return (
         <>
-            <UserContext.Provider value={{ users, getUserById }}>
+            <UserContext.Provider value={{ users, getUserById, updateUser }}>
                 {!isLoading ? children : "Loading..."}
             </UserContext.Provider>
         </>

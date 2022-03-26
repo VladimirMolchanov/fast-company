@@ -1,42 +1,20 @@
-import React, { useEffect, useState } from "react";
-import api from "../../../api";
+import React from "react";
 import UserForm from "../../ui/userForm";
-import { useParams } from "react-router-dom";
+import { useAuth } from "../../../hooks/useAuth";
+import { useProfessions } from "../../../hooks/useProfession";
+import { useQuality } from "../../../hooks/useQuality";
 
 const UserEditPage = () => {
-    const { userId } = useParams();
-    const [user, setUser] = useState();
-    const [professions, setProfessions] = useState();
-    const [qualities, setQualities] = useState({});
-
-    useEffect(() => {
-        let cleanup = false;
-        api.professions.fetchAll().then((data) => {
-            if (!cleanup) setProfessions(data);
-        });
-        api.qualities.fetchAll().then((data) => {
-            if (!cleanup) setQualities(data);
-        });
-        return () => (cleanup = true);
-    }, []);
-
-    useEffect(() => {
-        let cleanup = false;
-        api.users.getById(userId).then((data) => {
-            if (!cleanup) setUser(data);
-        });
-        return () => (cleanup = true);
-    }, []);
-
+    const { currentUser: user } = useAuth();
+    const { professions, isLoading: isLoadingProfessions } = useProfessions();
+    const { qualities, isLoading: isLoadingQualities } = useQuality();
     return (
         <>
-            {user && professions && qualities
-                ? <UserForm
-                    user={user}
-                    professions={professions}
-                    qualities={qualities}/>
-                : <h1>Loading...</h1>
-            }
+            {user && !isLoadingProfessions && !isLoadingQualities ? (
+                <UserForm user={user} professions={professions} qualities={qualities} />
+            ) : (
+                <h1>Loading...</h1>
+            )}
         </>
     );
 };
