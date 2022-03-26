@@ -3,34 +3,28 @@ import PropTypes from "prop-types";
 import Pagination from "../../common/pagination";
 import { paginate } from "../../../utils/paginate";
 import GroupList from "../../common/groupList";
-import api from "../../../api";
 import SearchStatus from "../../ui/searchStatus";
 import UsersTable from "../../ui/usersTable";
 import _ from "lodash";
 import Search from "../../common/search";
 import { useUser } from "../../../hooks/useUsers";
+import { useProfessions } from "../../../hooks/useProfession";
+import { useAuth } from "../../../hooks/useAuth";
 
 const UserListPage = () => {
     const [currentPage, setCurrentPage] = useState(1);
-    const [professions, setProfessions] = useState();
+    const { isLoading: professionsLoading, professions } = useProfessions();
     const [selectedProf, setSelectedProf] = useState();
     const [sortBy, setSortBy] = useState({ path: "name", order: "asc" });
     const [search, setSearch] = useState("");
     const pageSize = 8;
 
+    const { currentUser } = useAuth();
     const { users } = useUser();
 
     const handleDelete = (userId) => {};
 
     const handleToggleBookMark = (userId) => {};
-
-    useEffect(() => {
-        let cleanup = false;
-        api.professions.fetchAll().then((data) => {
-            if (!cleanup) setProfessions(data);
-        });
-        return () => (cleanup = true);
-    }, []);
 
     useEffect(() => {
         setCurrentPage(1);
@@ -51,21 +45,21 @@ const UserListPage = () => {
         setSearch(search);
     };
 
-    const filter = () => {
+    const filter = (data) => {
         if (selectedProf) {
-            return users.filter((user) => JSON.stringify(user.profession) === JSON.stringify(selectedProf));
+            return data.filter((user) => JSON.stringify(user.profession) === JSON.stringify(selectedProf));
         }
         if (search) {
-            return users.filter((user) => {
+            return data.filter((user) => {
                 const s = user.name.toLowerCase().match(search.toLowerCase());
                 return s && s.length !== 0;
             });
         }
-        return users;
+        return data.filter((u) => u._id !== currentUser._id);
     };
 
     if (users) {
-        const filteredUsers = filter();
+        const filteredUsers = filter(users);
 
         const count = filteredUsers.length;
         const sortedUsers = _.orderBy(filteredUsers, [sortBy.path], [sortBy.order]);
@@ -74,10 +68,9 @@ const UserListPage = () => {
         const clearFilter = () => {
             setSelectedProf(null);
         };
-
         return (
             <div className="d-flex">
-                {professions && (
+                {!professionsLoading && professions && (
                     <div className="d-flex flex-column flex-shrink-0 p-3">
                         <GroupList
                             selectedItem={selectedProf}

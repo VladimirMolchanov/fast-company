@@ -3,9 +3,15 @@ import PropTypes from "prop-types";
 import axios from "axios";
 import userService from "../service/user.service";
 import { toast } from "react-toastify";
-import { setTokens } from "../service/localStorage.service";
+import localStorageService, { setTokens } from "../service/localStorage.service";
+import { useHistory } from "react-router-dom";
 
-const httpAuth = axios.create({});
+export const httpAuth = axios.create({
+    baseURL: "https://identitytoolkit.googleapis.com/v1/",
+    params: {
+        key: process.env.REACT_APP_FIREBASE_KEY
+    }
+});
 
 const AuthContext = React.createContext();
 
@@ -14,13 +20,16 @@ export const useAuth = () => {
 };
 
 const AuthProvider = ({ children }) => {
+    const history = useHistory();
     const [error, setError] = useState(null);
-    const [currentUser, setUser] = useState({});
+    const [currentUser, setUser] = useState();
+    const [isLoading, setLoading] = useState(true);
     async function signIn({ email, password }) {
-        const url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${process.env.REACT_APP_FIREBASE_KEY}`;
+        const url = `accounts:signInWithPassword`;
         try {
             const { data } = await httpAuth.post(url, { email, password, returnSecureToken: true });
             setTokens(data);
+            await getUserData();
         } catch (e) {
             errorCatcher(e);
             const { code, message } = e.response.data.error;
@@ -40,14 +49,27 @@ const AuthProvider = ({ children }) => {
             }
         }
     }
+    function logOut() {
+        localStorageService.removeAuthData();
+        setUser(null);
+        history.push("/");
+    }
+    function randomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1) + min);
+    }
     async function signUp({ email, password, ...rest }) {
-        const url = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${process.env.REACT_APP_FIREBASE_KEY}`;
+        const url = `accounts:signUp`;
         try {
             const { data } = await httpAuth.post(url, { email, password, returnSecureToken: true });
             setTokens(data);
             await createUser({
                 _id: data.localId,
                 email,
+                rate: randomInt(1, 5),
+                completedMeetings: randomInt(0, 200),
+                image: `https://avatars.dicebear.com/api/avataaars/${(Math.random() + 1)
+                    .toString(36)
+                    .substring(7)}.svg`,
                 ...rest
             });
         } catch (e) {
@@ -65,7 +87,7 @@ const AuthProvider = ({ children }) => {
     }
     async function createUser(data) {
         try {
-            const { content } = userService.create(data);
+            const { content } = await userService.create(data);
             setUser(content);
         } catch (e) {
             errorCatcher(e);
@@ -83,9 +105,41 @@ const AuthProvider = ({ children }) => {
         const { message } = error.response.data;
         setError(message);
     }
+
+    async function getUserData() {
+        try {
+            const { content } = await userService.getCurrentUser();
+            setUser(content);
+        } catch (e) {
+            errorCatcher(e);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    async function updateUserData(data) {
+        try {
+            const { content } = await userService.update(data);
+            setUser(content);
+        } catch (e) {
+            toast.error(e.toString());
+            errorCatcher(e);
+            throw e;
+        }
+    }
+
+    useEffect(() => {
+        if (localStorageService.getAccessToken()) {
+            getUserData();
+        } else {
+            setLoading(false);
+        }
+    }, []);
     return (
         <>
-            <AuthContext.Provider value={{ signUp, currentUser, signIn }}>{children}</AuthContext.Provider>
+            <AuthContext.Provider value={{ signUp, currentUser, signIn, logOut, updateUserData }}>
+                {!isLoading ? children : "Loading..."}
+            </AuthContext.Provider>
         </>
     );
 };

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import TextField from "../common/form/textField";
@@ -5,21 +6,41 @@ import SelectFiled from "../common/form/selectFiled";
 import RadioField from "../common/form/radioField";
 import MultiSelectField from "../common/form/multiSelectField";
 import { validator } from "../../utils/validator";
-import api from "../../api";
 import { useHistory } from "react-router-dom";
 import BackHistoryButton from "../common/backButton";
+import { useAuth } from "../../hooks/useAuth";
 
 const UserForm = ({ user, professions, qualities }) => {
     const history = useHistory();
+
+    const { updateUserData } = useAuth();
+
+    /* eslint-disable */
     const [data, setData] = useState({
         name: user.name || "",
         email: user.email || "",
-        profession: user.profession ? user.profession._id : "",
+        profession: user.profession,
         sex: user.sex || "male",
-        qualities: user.qualities ? user.qualities.map(qualitie => ({ label: qualitie.name, value: qualitie._id })) : []
+        qualities: user.qualities
+            ? user.qualities.map((_id) => {
+                  const q = qualities.find((quality) => quality._id === _id);
+                  return q && { label: q.name, value: q._id };
+              })
+            : []
     });
+    /* eslint-enable */
+
     const [error, setError] = useState({});
     const [isPending, setIsPending] = useState(false);
+
+    const qualitiesList = qualities.map((q) => ({
+        label: q.name,
+        value: q._id
+    }));
+    const professionList = professions.map((p) => ({
+        label: p.name,
+        value: p._id
+    }));
 
     const handleChange = (target) => {
         if (target) {
@@ -59,32 +80,31 @@ const UserForm = ({ user, professions, qualities }) => {
     };
     const isValid = Object.keys(error).length === 0;
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const isValid = validate();
         if (!isValid) return;
-        const professionName = Object.keys(professions).find((name) => professions[name]._id === data.profession);
-        const _qualities = data.qualities.map((qualitie) => {
-            const qualitiesName = Object.keys(qualities).find((name) => qualities[name]._id === qualitie.value);
-            return qualities[qualitiesName];
-        });
         setIsPending(true);
 
-        api.users.update(user._id, {
+        const payload = {
+            ...user,
             name: data.name,
             email: data.email,
             sex: data.sex,
-            profession: professions[professionName],
-            qualities: _qualities
-        }).then(() => {
-            setIsPending(false);
-            history.push(`/users/${user._id}`);
-        });
+            profession: data.profession,
+            qualities: data.qualities.map((item) => item.value)
+        };
+        try {
+            await updateUserData(payload).then(() => {
+                setIsPending(false);
+                history.push(`/users/${user._id}`);
+            });
+        } catch (error) {}
     };
 
     return (
         <div className="container mt-5">
-            <BackHistoryButton/>
+            <BackHistoryButton />
             <div className="row">
                 <div className="col-md-6 offset-md-3 shadow p-4">
                     <form onSubmit={handleSubmit}>
@@ -104,7 +124,7 @@ const UserForm = ({ user, professions, qualities }) => {
                         />
                         <SelectFiled
                             onChange={handleChange}
-                            options={professions}
+                            options={professionList}
                             defaultOption="Choose..."
                             error={error.profession}
                             label="Выбери свою профессию"
@@ -122,7 +142,7 @@ const UserForm = ({ user, professions, qualities }) => {
                             onChange={handleChange}
                         />
                         <MultiSelectField
-                            options={qualities}
+                            options={qualitiesList}
                             onChange={handleChange}
                             defaultValue={data.qualities}
                             name="qualities"
@@ -131,11 +151,14 @@ const UserForm = ({ user, professions, qualities }) => {
                         <button
                             type="submit"
                             disabled={!isValid || isPending}
-                            className="btn btn-primary w-100 mx-auto"
-                        >
-                            {isPending &&
-                                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"/>
-                            }
+                            className="btn btn-primary w-100 mx-auto">
+                            {isPending && (
+                                <span
+                                    className="spinner-border spinner-border-sm me-2"
+                                    role="status"
+                                    aria-hidden="true"
+                                />
+                            )}
                             Submit
                         </button>
                     </form>
