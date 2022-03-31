@@ -7,10 +7,9 @@ import SearchStatus from "../../ui/searchStatus";
 import UsersTable from "../../ui/usersTable";
 import _ from "lodash";
 import Search from "../../common/search";
-import { useAuth } from "../../../hooks/useAuth";
 import { useSelector } from "react-redux";
 import { getProfessions, getProfessionsLoadingStatus } from "../../../store/profession";
-import { getUsersList } from "../../../store/users";
+import { getCurrentUserId, getUsersList } from "../../../store/users";
 
 const UserListPage = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -23,7 +22,8 @@ const UserListPage = () => {
     const [search, setSearch] = useState("");
     const pageSize = 8;
 
-    const { currentUser } = useAuth();
+    const currentUserId = useSelector(getCurrentUserId());
+
     const users = useSelector(getUsersList());
 
     const handleDelete = (userId) => {};
@@ -59,7 +59,7 @@ const UserListPage = () => {
                 return s && s.length !== 0;
             });
         }
-        return data.filter((u) => u._id !== currentUser._id);
+        return data.filter((u) => u._id !== currentUserId);
     };
 
     if (users) {

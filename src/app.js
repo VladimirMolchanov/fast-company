@@ -11,14 +11,13 @@ import LogOut from "./layouts/logOut";
 import { useDispatch } from "react-redux";
 import { loadQualitiesList } from "./store/qualities";
 import { loadProfessionsList } from "./store/profession";
-import { loadUsersList } from "./store/users";
 
 export const App = () => {
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch(loadQualitiesList());
         dispatch(loadProfessionsList());
-        dispatch(loadUsersList());
+        // dispatch(loadUsersList());
     }, []);
 
     return (
