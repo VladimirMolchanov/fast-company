@@ -5,16 +5,31 @@ import localStorageService from "../service/localStorage.service";
 import { randomInt } from "../utils/getRandomint";
 import history from "../utils/history";
 
+/* eslint-disable */
+const initialState = localStorageService.getAccessToken()
+    ? {
+          entities: null,
+          isLoading: true,
+          error: null,
+          auth: {
+              userId: localStorageService.getUserId()
+          },
+          isLoggedIn: true,
+          dataLoaded: false
+      }
+    : {
+          entities: null,
+          isLoading: false,
+          error: null,
+          auth: null,
+          isLoggedIn: false,
+          dataLoaded: false
+      };
+/* eslint-enable */
+
 const usersSlice = createSlice({
     name: "users",
-    initialState: {
-        entities: null,
-        isLoading: true,
-        error: null,
-        auth: null,
-        isLoggedIn: null,
-        dataLoaded: false
-    },
+    initialState,
     reducers: {
         usersRequested: (state) => {
             state.isLoading = true;
@@ -100,7 +115,7 @@ function createUser(payload) {
         try {
             const { content } = await userService.create(payload);
             dispatch(userCreated(content));
-            history.push("/");
+            history.push("/users");
         } catch (error) {
             dispatch(createUserFailed());
         }
@@ -124,5 +139,6 @@ export const getUserById = (userId) => (state) => {
 export const getIsLoggedIn = () => (state) => state.users.isLoggedIn;
 export const getDataStatus = () => (state) => state.users.dataLoaded;
 export const getCurrentUserId = () => (state) => state.users.auth.authId;
+export const getUsersLoadingStatus = () => (state) => state.isLoading;
 
 export default usersReducer;

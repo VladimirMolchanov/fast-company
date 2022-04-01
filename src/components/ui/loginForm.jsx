@@ -84,7 +84,8 @@ const LoginForm = () => {
         const isValid = validate();
         if (!isValid) return;
         const redirect =
-            history.location.state && history.location.state.from.pathname ? history.location.state.from.pathname : "/";
+            // history.location.state && history.location.state.from.pathname ? history.location.state.from.pathname : "/";
+            history.location.state ? history.location.state.from.pathname : "/";
 
         dispatch(login({ payload: data, redirect }));
     };

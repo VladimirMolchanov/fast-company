@@ -5,6 +5,7 @@ import NavProfile from "./navProfile";
 
 const NavBar = () => {
     const { currentUser } = useAuth();
+
     return (
         <nav className="navbar bg-light mb-3">
             <div className="container-fluid">
