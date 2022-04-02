@@ -50,6 +50,9 @@ const usersSlice = createSlice({
         authRequestFailed: (state, action) => {
             state.error = action.payload;
         },
+        updateRequestFailed: (state, action) => {
+            state.error = action.payload;
+        },
         userCreated: (state, action) => {
             if (!Array.isArray(state.entities)) {
                 state.entities = [];
@@ -60,6 +63,10 @@ const usersSlice = createSlice({
             state.entities = null;
             state.isLoggedIn = false;
             state.auth = null;
+        },
+        updateUserRequestSuccess: (state, action) => {
+            const index = state.entities.findIndex((u) => u._id === action.payload._id);
+            state.entities[index] = action.payload;
         }
     }
 });
@@ -72,12 +79,15 @@ const {
     authRequestSuccess,
     authRequestFailed,
     userCreated,
-    userLoggedOut
+    userLoggedOut,
+    updateUserRequestSuccess,
+    updateRequestFailed
 } = actions;
 
 const authRequested = createAction("users/authRequested");
 const userCreateRequested = createAction("users/userCreateRequested");
 const createUserFailed = createAction("users/createUserFailed");
+const updateUserRequested = createAction("users/updateUserRequested");
 /* eslint-disable */
 export const login =
     ({ payload, redirect }) =>
@@ -139,6 +149,17 @@ function createUser(payload) {
         }
     };
 }
+
+export const updateUser = (payload, redirect) => async (dispatch) => {
+    dispatch(updateUserRequested());
+    try {
+        const { content } = await userService.update(payload);
+        dispatch(updateUserRequestSuccess(content));
+        history.push(redirect);
+    } catch (error) {
+        dispatch(updateRequestFailed());
+    }
+};
 
 export const loadUsersList = () => async (dispatch) => {
     dispatch(usersRequested());
