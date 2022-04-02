@@ -4,8 +4,8 @@ import TextField from "../common/form/textField";
 import CheckBoxField from "../common/form/checkBoxField";
 import * as yup from "yup";
 import { useHistory } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { login } from "../../store/users";
+import { useDispatch, useSelector } from "react-redux";
+import { getAuthError, login } from "../../store/users";
 
 const LoginForm = () => {
     const history = useHistory();
@@ -15,6 +15,7 @@ const LoginForm = () => {
         password: "",
         stayOn: false
     });
+    const loginError = useSelector(getAuthError());
     const [error, setError] = useState({});
     const handleChange = (target) => {
         if (target) {
@@ -96,7 +97,7 @@ const LoginForm = () => {
                 name="email"
                 value={data.email}
                 onChange={handleChange}
-                error={error.email}
+                error={error.email || loginError}
             />
             <TextField
                 label="Пароль"
@@ -104,7 +105,7 @@ const LoginForm = () => {
                 name="password"
                 value={data.password}
                 onChange={handleChange}
-                error={error.password}
+                error={error.password || loginError}
             />
             <CheckBoxField value={data.stayOn} onChange={handleChange} name="stayOn">
                 Оставаться в системе

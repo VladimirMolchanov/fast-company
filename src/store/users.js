@@ -4,6 +4,7 @@ import authService from "../service/auth.service";
 import localStorageService from "../service/localStorage.service";
 import { randomInt } from "../utils/getRandomint";
 import history from "../utils/history";
+import { generateAuthError } from "../utils/generateAuthError";
 
 /* eslint-disable */
 const initialState = localStorageService.getAccessToken()
@@ -67,6 +68,9 @@ const usersSlice = createSlice({
         updateUserRequestSuccess: (state, action) => {
             const index = state.entities.findIndex((u) => u._id === action.payload._id);
             state.entities[index] = action.payload;
+        },
+        authRequested: (state) => {
+            state.error = null;
         }
     }
 });
@@ -81,10 +85,10 @@ const {
     userCreated,
     userLoggedOut,
     updateUserRequestSuccess,
-    updateRequestFailed
+    updateRequestFailed,
+    authRequested
 } = actions;
 
-const authRequested = createAction("users/authRequested");
 const userCreateRequested = createAction("users/userCreateRequested");
 const createUserFailed = createAction("users/createUserFailed");
 const updateUserRequested = createAction("users/updateUserRequested");
@@ -100,7 +104,13 @@ export const login =
             localStorageService.setTokens(data);
             history.push(redirect);
         } catch (error) {
-            dispatch(authRequestFailed(error.message));
+            const { code, message } = error.response.data.error;
+            if (code === 400) {
+                const errorMessage = generateAuthError(message);
+                dispatch(authRequestFailed(errorMessage));
+            } else {
+                dispatch(authRequestFailed(error.message));
+            }
         }
     };
 /* eslint-enable */
@@ -183,4 +193,5 @@ export const getCurrentUserData = () => (state) => {
     if (!state.users.entities) return null;
     return state.users.entities.find((u) => u._id === state.users.auth.userId);
 };
+export const getAuthError = () => (state) => state.users.error;
 export default usersReducer;
