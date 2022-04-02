@@ -55,13 +55,25 @@ const usersSlice = createSlice({
                 state.entities = [];
             }
             state.entities.push(action.payload);
+        },
+        userLoggedOut: (state) => {
+            state.entities = null;
+            state.isLoggedIn = false;
+            state.auth = null;
         }
     }
 });
 
 const { reducer: usersReducer, actions } = usersSlice;
-const { usersRequested, usersReceived, usersRequestFailed, authRequestSuccess, authRequestFailed, userCreated } =
-    actions;
+const {
+    usersRequested,
+    usersReceived,
+    usersRequestFailed,
+    authRequestSuccess,
+    authRequestFailed,
+    userCreated,
+    userLoggedOut
+} = actions;
 
 const authRequested = createAction("users/authRequested");
 const userCreateRequested = createAction("users/userCreateRequested");
@@ -109,6 +121,12 @@ export const singUp =
     };
 /* eslint-enable */
 
+export const logOut = () => (dispatch) => {
+    localStorageService.removeAuthData();
+    dispatch(userLoggedOut());
+    history.push("/");
+};
+
 function createUser(payload) {
     return async function (dispatch) {
         dispatch(userCreateRequested());
@@ -138,7 +156,10 @@ export const getUserById = (userId) => (state) => {
 };
 export const getIsLoggedIn = () => (state) => state.users.isLoggedIn;
 export const getDataStatus = () => (state) => state.users.dataLoaded;
-export const getCurrentUserId = () => (state) => state.users.auth.authId;
+export const getCurrentUserId = () => (state) => state.users.auth.userId;
 export const getUsersLoadingStatus = () => (state) => state.isLoading;
-
+export const getCurrentUserData = () => (state) => {
+    if (!state.users.entities) return null;
+    return state.users.entities.find((u) => u._id === state.users.auth.userId);
+};
 export default usersReducer;
