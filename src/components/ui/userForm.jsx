@@ -6,14 +6,12 @@ import SelectFiled from "../common/form/selectFiled";
 import RadioField from "../common/form/radioField";
 import MultiSelectField from "../common/form/multiSelectField";
 import { validator } from "../../utils/validator";
-import { useHistory } from "react-router-dom";
 import BackHistoryButton from "../common/backButton";
-import { useAuth } from "../../hooks/useAuth";
+import { useDispatch } from "react-redux";
+import { updateUser } from "../../store/users";
 
 const UserForm = ({ user, professions, qualities }) => {
-    const history = useHistory();
-
-    const { updateUserData } = useAuth();
+    const dispatch = useDispatch();
 
     /* eslint-disable */
     const [data, setData] = useState({
@@ -80,7 +78,7 @@ const UserForm = ({ user, professions, qualities }) => {
     };
     const isValid = Object.keys(error).length === 0;
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         const isValid = validate();
         if (!isValid) return;
@@ -94,12 +92,10 @@ const UserForm = ({ user, professions, qualities }) => {
             profession: data.profession,
             qualities: data.qualities.map((item) => item.value)
         };
-        try {
-            await updateUserData(payload).then(() => {
-                setIsPending(false);
-                history.push(`/users/${user._id}`);
-            });
-        } catch (error) {}
+
+        const redirect = `/users/${user._id}`;
+
+        dispatch(updateUser(payload, redirect));
     };
 
     return (

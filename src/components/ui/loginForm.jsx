@@ -3,17 +3,19 @@ import React, { useEffect, useState } from "react";
 import TextField from "../common/form/textField";
 import CheckBoxField from "../common/form/checkBoxField";
 import * as yup from "yup";
-import { useAuth } from "../../hooks/useAuth";
 import { useHistory } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { getAuthError, login } from "../../store/users";
 
 const LoginForm = () => {
     const history = useHistory();
-    const { signIn } = useAuth();
+    const dispatch = useDispatch();
     const [data, setData] = useState({
         email: "",
         password: "",
         stayOn: false
     });
+    const loginError = useSelector(getAuthError());
     const [error, setError] = useState({});
     const handleChange = (target) => {
         if (target) {
@@ -78,20 +80,15 @@ const LoginForm = () => {
     };
     const isValid = Object.keys(error).length === 0;
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         const isValid = validate();
         if (!isValid) return;
-        try {
-            await signIn(data);
-            history.push(
-                history.location.state && history.location.state.from.pathname
-                    ? history.location.state.from.pathname
-                    : "/"
-            );
-        } catch (error) {
-            setError(error);
-        }
+        const redirect =
+            // history.location.state && history.location.state.from.pathname ? history.location.state.from.pathname : "/";
+            history.location.state ? history.location.state.from.pathname : "/";
+
+        dispatch(login({ payload: data, redirect }));
     };
     return (
         <form onSubmit={handleSubmit}>
@@ -100,7 +97,7 @@ const LoginForm = () => {
                 name="email"
                 value={data.email}
                 onChange={handleChange}
-                error={error.email}
+                error={error.email || loginError}
             />
             <TextField
                 label="Пароль"
@@ -108,7 +105,7 @@ const LoginForm = () => {
                 name="password"
                 value={data.password}
                 onChange={handleChange}
-                error={error.password}
+                error={error.password || loginError}
             />
             <CheckBoxField value={data.stayOn} onChange={handleChange} name="stayOn">
                 Оставаться в системе

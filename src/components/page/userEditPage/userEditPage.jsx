@@ -1,13 +1,17 @@
 import React from "react";
 import UserForm from "../../ui/userForm";
-import { useAuth } from "../../../hooks/useAuth";
-import { useProfessions } from "../../../hooks/useProfession";
-import { useQuality } from "../../../hooks/useQuality";
+import { useSelector } from "react-redux";
+import { getQualities, getQualitiesLoadingStatus } from "../../../store/qualities";
+import { getProfessions, getProfessionsLoadingStatus } from "../../../store/profession";
+import { getCurrentUserData } from "../../../store/users";
 
 const UserEditPage = () => {
-    const { currentUser: user } = useAuth();
-    const { professions, isLoading: isLoadingProfessions } = useProfessions();
-    const { qualities, isLoading: isLoadingQualities } = useQuality();
+    const user = useSelector(getCurrentUserData());
+    const professions = useSelector(getProfessions());
+    const isLoadingProfessions = useSelector(getProfessionsLoadingStatus());
+    const qualities = useSelector(getQualities());
+    const isLoadingQualities = useSelector(getQualitiesLoadingStatus());
+
     return (
         <>
             {user && !isLoadingProfessions && !isLoadingQualities ? (
